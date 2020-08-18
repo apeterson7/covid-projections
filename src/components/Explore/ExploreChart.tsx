@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { useMemo } from 'react';
 import moment from 'moment';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ import { Series, YAxisScale } from './interfaces';
 import SeriesChart from './SeriesChart';
 import { getMaxBy, getTimeAxisTicks } from './utils';
 import * as Styles from './Explore.style';
+import { formatInteger } from 'common/utils';
 
 const getDate = (d: Column) => new Date(d.x);
 const getY = (d: Column) => d.y;
@@ -29,7 +30,7 @@ function getYAxisScale(yAxisScale: YAxisScale, maxY: number, height: number) {
       });
 }
 
-const ExploreChart: FunctionComponent<{
+const ExploreChart: React.FC<{
   width: number;
   height: number;
   series: Series[];
@@ -66,7 +67,11 @@ const ExploreChart: FunctionComponent<{
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const timeTickFormat = isMobile ? 'MMM' : 'MMMM D';
 
-  const yScale = getYAxisScale(yAxisScale, maxY, innerHeight);
+  const yScale = useMemo(() => getYAxisScale(yAxisScale, maxY, innerHeight), [
+    yAxisScale,
+    maxY,
+    innerHeight,
+  ]);
 
   const barWidth = 0.7 * (innerWidth / numDays);
 
@@ -93,7 +98,7 @@ const ExploreChart: FunctionComponent<{
           <GridRows<number> scale={yScale} width={innerWidth} />
         </Styles.GridLines>
         <ChartStyle.Axis>
-          <AxisLeft scale={yScale} />
+          <AxisLeft scale={yScale} tickFormat={formatInteger} />
         </ChartStyle.Axis>
         <ChartStyle.Axis>
           <AxisBottom
