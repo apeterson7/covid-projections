@@ -5,13 +5,15 @@ import ExploreTabs from './ExploreTabs';
 import ExploreChart from './ExploreChart';
 import * as Styles from './Explore.style';
 import { ParentSize } from '@vx/responsive';
-import { ExploreMetric } from './interfaces';
+import { ExploreMetric, YAxisScale } from './interfaces';
 import { getMetricLabels, getSeries } from './utils';
+import ScaleSelector from './ScaleSelector';
 
 const Explore: React.FunctionComponent<{ projection: Projection }> = ({
   projection,
 }) => {
   const [currentMetric, setCurrentMetric] = useState(ExploreMetric.CASES);
+  const [yAxisScale, setYAxisScale] = useState(YAxisScale.LINEAR);
 
   const onChangeTab = (event: React.ChangeEvent<{}>, newMetric: number) => {
     setCurrentMetric(newMetric);
@@ -35,10 +37,18 @@ const Explore: React.FunctionComponent<{ projection: Projection }> = ({
         labels={metricLabels}
         onChangeTab={onChangeTab}
       />
+      <div>
+        <ScaleSelector scale={yAxisScale} setScale={setYAxisScale} />
+      </div>
       <Styles.ChartContainer>
         <ParentSize>
           {({ width }) => (
-            <ExploreChart series={series} width={width} height={400} />
+            <ExploreChart
+              series={series}
+              yAxisScale={yAxisScale}
+              width={width}
+              height={400}
+            />
           )}
         </ParentSize>
       </Styles.ChartContainer>
